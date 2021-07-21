@@ -22,8 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
         
-        let vc = LaunchVC()
-        window?.rootViewController = vc
+        Coordinator.launch()
         
         return true
     }
