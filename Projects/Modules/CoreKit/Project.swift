@@ -9,8 +9,8 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.framework(
-    name: "Features",
+    name: "CoreKit",
     dependencies: [
-        .coreKit
+        .thirdPartyManager,
     ]
 )
