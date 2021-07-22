@@ -7,19 +7,27 @@
 //
 
 import UIKit
+import ReactorKit
+import RxCocoa
 
-final class NeighborhoodVC: UIViewController {
+final class NeighborhoodVC: UIViewController, View {
     
     private enum Images {
         static let searchImage: UIImage? = .init(systemName: "magnifyingglass")?.withRenderingMode(.alwaysOriginal)
         static let bellImage: UIImage? = .init(systemName: "bell")?.withRenderingMode(.alwaysOriginal)
     }
     
-    private let tableView: UITableView = .init().then {
+    var disposeBag: DisposeBag = .init()
+    
+    private lazy var tableView: UITableView = .init().then {
         $0.backgroundColor = .secondarySystemBackground
         $0.separatorStyle = .none
+        $0.register(PostCell.self, forCellReuseIdentifier: PostCell.reuseIdentifier)
+        $0.dataSource = self
+        $0.delegate = self
+        $0.estimatedRowHeight = 100
+        $0.rowHeight = UITableView.automaticDimension
     }
-    
     private let locationButton = UIBarButtonItem().then {
         $0.title = "마곡동"
         $0.tintColor = .label
@@ -32,9 +40,9 @@ final class NeighborhoodVC: UIViewController {
     private let searchButton = UIBarButtonItem(image: Images.searchImage, style: .plain, target: nil, action: nil)
     private let bellButton = UIBarButtonItem(image: Images.bellImage, style: .plain, target: nil, action: nil)
     
-    
-    init() {
+    init(reactor: NeighborhoodReactor) {
         super.init(nibName: nil, bundle: nil)
+        self.reactor = reactor
     }
     required init?(coder: NSCoder) {
         fatalError("All UIs are code based, not nib.")
@@ -47,7 +55,6 @@ final class NeighborhoodVC: UIViewController {
     
     private func setUp() {
         setUpUI()
-        setUpTableView()
     }
     
     private func setUpUI() {
@@ -67,9 +74,20 @@ final class NeighborhoodVC: UIViewController {
         }
     }
     
-    private func setUpTableView() {
-        tableView.register(PostCell.self, forCellReuseIdentifier: PostCell.reuseIdentifier)
-        tableView.dataSource = self
+    func bind(reactor: NeighborhoodReactor) {
+        reactor.state
+            .map { $0.posts }
+            .subscribe(onNext: { [weak self] (posts, newIndices) in
+                if let newIndices = newIndices {
+                    self?.tableView.beginUpdates()
+                    self?.tableView.insertRows(at: newIndices, with: .none)
+                    self?.tableView.endUpdates()
+                    // TODO: cell insert 안되는 오류 해결
+                } else {
+                    self?.tableView.reloadData()
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
 }
@@ -79,16 +97,29 @@ final class NeighborhoodVC: UIViewController {
 extension NeighborhoodVC: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 20
+        return reactor?.currentState.posts.0.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: PostCell.reuseIdentifier, for: indexPath) as? PostCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: PostCell.reuseIdentifier, for: indexPath) as? PostCell,
+              let post = reactor?.currentState.posts.0[indexPath.row] else {
             return UITableViewCell()
         }
-        let randomStr = String(repeating: "안녕하세요 홍경표입니다. 호호 ㅁㄴㅇㄹ ", count: Int.random(in: 1...4))
-        cell.configure(text: randomStr, index: indexPath.row)
+        cell.configure(post: post)
         return cell
+    }
+    
+}
+
+// MARK: - TableView Delegate
+
+extension NeighborhoodVC: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let count = reactor?.currentState.posts.0.count ?? 0
+        if (indexPath.row == (count - 1)) {
+            reactor?.action.onNext(.fetch)
+        }
     }
     
 }

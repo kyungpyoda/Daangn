@@ -28,26 +28,20 @@ final class PostCell: UITableViewCell {
     private let contentsLabel: UILabel = .init().then {
         $0.numberOfLines = 3
         $0.font = .preferredFont(forTextStyle: .body)
-        $0.text = """
-                  안녕하세요 홍경표입니다. 안녕하세요 홍경표입니다. 안녕하세요 홍경표입니다. 안녕하세요 홍경표입니다. 안녕하세요 홍경표입니다. 안녕하세요 홍경표입니다. 안녕하세요 홍경표입니다. 안녕하세요 홍경표입니다. 안녕하세요 홍경표입니다. 안녕하세요 홍경표입니다. 안녕하세요 홍경표입니다.
-                  """
     }
     private let contentsImageView: UIImageView = .init().then {
         $0.contentMode = .scaleAspectFit
         $0.clipsToBounds = true
-        $0.image = UIImage(systemName: "cloud.rain")
         $0.backgroundColor = .systemGray5
         $0.isHidden = true
     }
     private let userInfoLabel: UILabel = .init().then {
         $0.font = .preferredFont(forTextStyle: .caption1)
         $0.textColor = .systemGray
-        $0.text = "홍경표 · 강서구 마곡동"
     }
     private let dateLabel: UILabel = .init().then {
         $0.font = .preferredFont(forTextStyle: .caption1)
         $0.textColor = .systemGray
-        $0.text = "1시간 전"
     }
     
     private let reactionButton: UIButton = .init().then {
@@ -151,14 +145,27 @@ final class PostCell: UITableViewCell {
         }
     }
     
-    func configure(text: String, index: Int) {
-        contentsLabel.text = text
-        contentsImageView.isHidden = index % 2 == 0
+    func configure(post: Post) {
+        contentsLabel.text = post.contents
+        commentLabel.text = "댓글 \(post.comments.count)"
+        let diffComponenets = Calendar.current.dateComponents([.hour], from: post.postDate, to: Date())
+        dateLabel.text = "\(diffComponenets.hour ?? 0)시간 전"
+        userInfoLabel.text = "\(post.writer.nickname) · \(post.writer.location)"
+        reactionCountLabel.text = "\(post.reaction.count)"
+        if let imageURLStr = post.imageURLStr {
+            contentsImageView.isHidden = false
+            contentsImageView.image = UIImage(systemName: imageURLStr)
+        }
     }
     
     override func prepareForReuse() {
         contentsLabel.text = ""
         contentsImageView.isHidden = true
+        contentsImageView.image = nil
+        commentLabel.text = ""
+        dateLabel.text = ""
+        userInfoLabel.text = ""
+        reactionCountLabel.text = ""
     }
     
 }

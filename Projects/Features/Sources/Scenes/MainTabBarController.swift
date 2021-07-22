@@ -18,7 +18,7 @@ public final class MainTabBarController: UITabBarController {
         case profile
         
         static let homeTabImage: UIImage? = nil
-        static let neighborhoodTabImage: UIImage? = nil
+        static let neighborhoodTabImage: UIImage? = .init(systemName: "star.fill")
         static let nearTabImage: UIImage? = nil
         static let chatTabImage: UIImage? = nil
         static let profileTabImage: UIImage? = nil
@@ -75,7 +75,7 @@ public final class MainTabBarController: UITabBarController {
                 return vc
                 
             case .neighborhood:
-                let vc = NeighborhoodVC()
+                let vc = NeighborhoodVC(reactor: .init())
                 vc.tabBarItem = tab.tabBarItem
                 let navi = UINavigationController(rootViewController: vc)
                 return navi
@@ -101,7 +101,7 @@ public final class MainTabBarController: UITabBarController {
         }
         
         setViewControllers(
-            tabs,
+            [tabs[1]],
             animated: false
         )
         
