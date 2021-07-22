@@ -75,10 +75,10 @@ public final class MainTabBarController: UITabBarController {
                 return vc
                 
             case .neighborhood:
-                let vc = UIViewController()
-                vc.view.backgroundColor = .systemBackground
+                let vc = NeighborhoodVC()
                 vc.tabBarItem = tab.tabBarItem
-                return vc
+                let navi = UINavigationController(rootViewController: vc)
+                return navi
                 
             case .near:
                 let vc = UIViewController()
