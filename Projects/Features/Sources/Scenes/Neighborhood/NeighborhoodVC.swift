@@ -77,12 +77,10 @@ final class NeighborhoodVC: UIViewController, View {
     func bind(reactor: NeighborhoodReactor) {
         reactor.state
             .map { $0.posts }
+            .observeOn(MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] (posts, newIndices) in
                 if let newIndices = newIndices {
-                    self?.tableView.beginUpdates()
                     self?.tableView.insertRows(at: newIndices, with: .none)
-                    self?.tableView.endUpdates()
-                    // TODO: cell insert 안되는 오류 해결
                 } else {
                     self?.tableView.reloadData()
                 }
