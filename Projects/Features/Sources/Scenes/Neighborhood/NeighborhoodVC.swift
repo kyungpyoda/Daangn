@@ -95,12 +95,12 @@ final class NeighborhoodVC: UIViewController, View {
 extension NeighborhoodVC: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return reactor?.currentState.posts.0.count ?? 0
+        return reactor?.currentState.posts.data.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: PostCell.reuseIdentifier, for: indexPath) as? PostCell,
-              let post = reactor?.currentState.posts.0[indexPath.row] else {
+              let post = reactor?.currentState.posts.data[indexPath.row] else {
             return UITableViewCell()
         }
         cell.configure(post: post)
@@ -114,7 +114,7 @@ extension NeighborhoodVC: UITableViewDataSource {
 extension NeighborhoodVC: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let count = reactor?.currentState.posts.0.count ?? 0
+        let count = reactor?.currentState.posts.data.count ?? 0
         if (indexPath.row == (count - 1)) {
             reactor?.action.onNext(.fetch)
         }

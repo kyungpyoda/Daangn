@@ -23,7 +23,7 @@ final class NeighborhoodReactor: Reactor {
     
     struct State {
         var page: Int = 1
-        var posts: ([Post], [IndexPath]?) = ([], nil)
+        var posts: (data: [Post], newIndices: [IndexPath]?) = ([], nil)
     }
     
     enum PostUpdate {
@@ -64,8 +64,8 @@ final class NeighborhoodReactor: Reactor {
             newState.page = newPosts.isEmpty ? newState.page : newState.page + 1
             
         case let .addPosts(addedPosts):
-            let newIndices = diffIndices(beforeCount: newState.posts.0.count, newFetchedCount: addedPosts.count)
-            newState.posts = (newState.posts.0 + addedPosts, newIndices)
+            let newIndices = diffIndices(beforeCount: newState.posts.data.count, newFetchedCount: addedPosts.count)
+            newState.posts = (newState.posts.data + addedPosts, newIndices)
             newState.page = addedPosts.isEmpty ? newState.page : newState.page + 1
         }
         
