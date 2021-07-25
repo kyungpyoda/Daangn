@@ -143,6 +143,8 @@ final class PostCell: UITableViewCell {
             $0.top.leading.trailing.equalToSuperview()
             $0.bottom.equalToSuperview().inset(8)
         }
+        
+        reactionButton.addTarget(self, action: #selector(popUp), for: .touchUpInside)
     }
     
     func configure(post: Post) {
@@ -166,6 +168,13 @@ final class PostCell: UITableViewCell {
         dateLabel.text = ""
         userInfoLabel.text = ""
         reactionCountLabel.text = ""
+    }
+    
+    @objc private func popUp(sender: UIButton) {
+        guard sender == reactionButton else { return }
+        let position = bottomViews.superview?.convert(bottomViews.frame.origin, to: nil)
+        let vc = EmojiPopUpVC(position: position)
+        vc.presentToTop(animated: true)
     }
     
 }
