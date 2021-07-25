@@ -8,6 +8,7 @@
 
 import Foundation
 import ReactorKit
+import CoreKit
 
 final class NeighborhoodReactor: Reactor {
     
@@ -33,25 +34,33 @@ final class NeighborhoodReactor: Reactor {
     
     // MARK: Properties
     
-    var isInProgress: Bool = false
-    
     let initialState: State
+    let provider: ServiceProviderType
     
     // MARK: Initializers
     
-    init() {
+    init(provider: ServiceProviderType) {
         initialState = State()
+        self.provider = provider
+        
         action.onNext(.refresh)
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .refresh:
-            let new = Post.pagination[initialState.page] ?? []
-            return .just(.resetPosts(with: new))
+            let pageToFetch = initialState.page
+            return provider.neighborhoodService.fetchPosts(for: pageToFetch)
+                .flatMap { posts -> Observable<Mutation> in
+                    return .just(.resetPosts(with: posts))
+                }
+            
         case .fetch:
-            let fetched = Post.pagination[currentState.page] ?? []
-            return .just(.addPosts(with: fetched))
+            let pageToFetch = currentState.page
+            return provider.neighborhoodService.fetchPosts(for: pageToFetch)
+                .flatMap { posts -> Observable<Mutation> in
+                    return .just(.addPosts(with: posts))
+                }
         }
     }
     

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreKit
 
 final class PostCell: UITableViewCell {
     static var reuseIdentifier: String { String(describing: Self.self) }

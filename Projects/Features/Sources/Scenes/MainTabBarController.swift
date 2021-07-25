@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreKit
 
 public final class MainTabBarController: UITabBarController {
     
@@ -66,6 +67,8 @@ public final class MainTabBarController: UITabBarController {
     }
     
     private func setUp() {
+        let serviceProvider = ServiceProvider.shared
+        
         let tabs: [UIViewController] = Tab.allCases.map { tab in
             switch tab {
             case .home:
@@ -75,7 +78,7 @@ public final class MainTabBarController: UITabBarController {
                 return vc
                 
             case .neighborhood:
-                let vc = NeighborhoodVC(reactor: .init())
+                let vc = NeighborhoodVC(reactor: .init(provider: serviceProvider))
                 vc.tabBarItem = tab.tabBarItem
                 let navi = UINavigationController(rootViewController: vc)
                 return navi
