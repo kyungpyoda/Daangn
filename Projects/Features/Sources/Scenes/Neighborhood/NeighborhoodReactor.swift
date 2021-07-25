@@ -36,6 +36,7 @@ final class NeighborhoodReactor: Reactor {
     
     let initialState: State
     let provider: ServiceProviderType
+    let errorSubject: PublishSubject<Error> = .init()
     
     // MARK: Initializers
     
@@ -51,6 +52,10 @@ final class NeighborhoodReactor: Reactor {
         case .refresh:
             let pageToFetch = initialState.page
             return provider.neighborhoodService.fetchPosts(for: pageToFetch)
+                .catchError { [weak self] error in
+                    self?.errorSubject.onNext(error)
+                    return .empty()
+                }
                 .flatMap { posts -> Observable<Mutation> in
                     return .just(.resetPosts(with: posts))
                 }
@@ -58,6 +63,10 @@ final class NeighborhoodReactor: Reactor {
         case .fetch:
             let pageToFetch = currentState.page
             return provider.neighborhoodService.fetchPosts(for: pageToFetch)
+                .catchError { [weak self] error in
+                    self?.errorSubject.onNext(error)
+                    return .empty()
+                }
                 .flatMap { posts -> Observable<Mutation> in
                     return .just(.addPosts(with: posts))
                 }

@@ -86,6 +86,20 @@ final class NeighborhoodVC: UIViewController, View {
                 }
             })
             .disposed(by: disposeBag)
+        
+        reactor.errorSubject
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] error in
+                self?.popUpErrorAlert(with: error)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func popUpErrorAlert(with error: Error) {
+        let alert = UIAlertController(title: "\(error)", message: error.localizedDescription, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "확인", style: .default, handler: nil)
+        alert.addAction(okAction)
+        present(alert, animated: true, completion: nil)
     }
     
 }
