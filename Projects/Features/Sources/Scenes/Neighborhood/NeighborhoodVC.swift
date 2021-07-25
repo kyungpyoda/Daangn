@@ -35,7 +35,7 @@ final class NeighborhoodVC: UIViewController, View {
         let attributes: [NSAttributedString.Key : Any]? = [
             .font: UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .title3).pointSize, weight: .bold),
         ]
-        $0.setTitleTextAttributes(attributes, for: .selected)
+        $0.setTitleTextAttributes(attributes, for: .highlighted)
         $0.setTitleTextAttributes(attributes, for: .normal)
     }
     private let searchButton = UIBarButtonItem(image: Images.searchImage, style: .plain, target: nil, action: nil)

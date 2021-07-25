@@ -75,11 +75,12 @@ final class NeighborhoodReactor: Reactor {
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
+        newState.posts.newIndices = nil
         
         switch mutation {
         case let .resetPosts(newPosts):
             newState.posts = (newPosts, nil)
-            newState.page = newPosts.isEmpty ? newState.page : newState.page + 1
+            newState.page = newPosts.isEmpty ? initialState.page : initialState.page + 1
             
         case let .addPosts(addedPosts):
             let newIndices = diffIndices(beforeCount: newState.posts.data.count, newFetchedCount: addedPosts.count)
