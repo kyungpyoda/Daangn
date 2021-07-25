@@ -14,6 +14,8 @@ public extension TargetDependency {
                                                     path: .relativeToRoot("Projects/Modules/CoreKit"))
     static let thirdPartyManager: TargetDependency = .project(target: "ThirdPartyManager",
                                                               path: .relativeToRoot("Projects/Modules/ThirdPartyManager"))
+    static let utilityModule: TargetDependency = .project(target: "UtilityModule",
+                                                          path: .relativeToRoot("Projects/Modules/UtilityModule"))
 }
 
 // SPM
