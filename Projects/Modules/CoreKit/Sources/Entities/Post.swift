@@ -1,20 +1,22 @@
 //
 //  Post.swift
-//  Features
+//  CoreKit
 //
-//  Created by 홍경표 on 2021/07/23.
+//  Created by 홍경표 on 2021/07/26.
 //  Copyright © 2021 pio. All rights reserved.
 //
 
 import Foundation
 
-struct Post {
-    var contents: String
-    var imageURLStr: String?
-    var writer: User
-    var postDate: Date
-    var reaction: [Reaction]
-    var comments: [String]
+// Todo: Category 구분,,
+
+public struct Post {
+    public var contents: String
+    public var imageURLStr: String?
+    public var writer: User
+    public var postDate: Date
+    public var reaction: [Reaction]
+    public var comments: [String]
 }
 extension Post {
     static let pagination: [Int: [Post]] = [
@@ -40,7 +42,7 @@ extension Post {
     static let maxPage: Int = 3
 }
 
-enum Reaction {
+public enum Reaction {
     case thumbsUp
     case heart
     case smile
@@ -51,9 +53,9 @@ extension Reaction: CaseIterable {
     }
 }
 
-struct User {
-    var nickname: String
-    var location: String
+public struct User {
+    public var nickname: String
+    public var location: String
 }
 extension User {
     static let dummy: [User] = [
