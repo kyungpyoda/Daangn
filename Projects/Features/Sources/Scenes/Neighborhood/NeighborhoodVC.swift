@@ -27,6 +27,7 @@ final class NeighborhoodVC: UIViewController, View {
         $0.delegate = self
         $0.estimatedRowHeight = 100
         $0.rowHeight = UITableView.automaticDimension
+        $0.refreshControl = refreshControl
     }
     private let locationButton = UIBarButtonItem().then {
         $0.title = "마곡동"
@@ -39,6 +40,7 @@ final class NeighborhoodVC: UIViewController, View {
     }
     private let searchButton = UIBarButtonItem(image: Images.searchImage, style: .plain, target: nil, action: nil)
     private let bellButton = UIBarButtonItem(image: Images.bellImage, style: .plain, target: nil, action: nil)
+    private let refreshControl: UIRefreshControl = .init()
     
     init(reactor: NeighborhoodReactor) {
         super.init(nibName: nil, bundle: nil)
@@ -75,9 +77,17 @@ final class NeighborhoodVC: UIViewController, View {
     }
     
     func bind(reactor: NeighborhoodReactor) {
+        refreshControl.rx.controlEvent(.valueChanged)
+            .map { Reactor.Action.refresh }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         reactor.state
             .map { $0.posts }
             .observeOn(MainScheduler.asyncInstance)
+            .do(onNext: { [weak self] _ in
+                self?.refreshControl.endRefreshing()
+            })
             .subscribe(onNext: { [weak self] (posts, newIndices) in
                 if let newIndices = newIndices {
                     self?.tableView.insertRows(at: newIndices, with: .none)
